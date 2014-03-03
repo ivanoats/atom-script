@@ -1,4 +1,6 @@
 script = require '../lib/script'
+ScriptView = require '../lib/script-view'
+{WorkspaceView} = require 'atom'
 
 # Use the command `window:run-package-specs` (cmd-alt-ctrl-p) to run specs.
 #
@@ -6,24 +8,21 @@ script = require '../lib/script'
 # or `fdescribe`). Remove the `f` to unfocus the block.
 
 describe "script", ->
-  activationPromise = null
 
   beforeEach ->
     atom.workspaceView = new WorkspaceView
-    activationPromise = atom.packages.activatePackage('script')
+    atom.workspace = atom.workspaceView.model
 
-  describe "when the script:toggle event is triggered", ->
-    it "attaches and then detaches the view", ->
-      expect(atom.workspaceView.find('.script')).not.toExist()
+    waitsFor ->
+      atom.packages.activatePackage('script')
 
-      # This is an activation event, triggering it will cause the package to be
-      # activated.
-      atom.workspaceView.trigger 'script:toggle'
+  describe "when the script:run-selection event is triggered", ->
+    it "splits pane to the right and runs script", ->
 
-      waitsForPromise ->
-        activationPromise
+      waitsFor ->
+        atom.workspaceView.open()
 
       runs ->
-        expect(atom.workspaceView.find('.script')).toExist()
-        atom.workspaceView.trigger 'script:toggle'
-        expect(atom.workspaceView.find('.script')).not.toExist()
+        expect(atom.workspaceView.getPanes()).toHaveLength(1)
+        atom.workspaceView.trigger "script:run-selection"
+        expect(atom.workspaceView.getPanes()).toHaveLength(2)

@@ -29,7 +29,7 @@ module.exports =
         interpreter = grammarMap[@lang]["interpreter"]
         makeargs = grammarMap[@lang]["makeargs"]
 
-      @scriptView = new ScriptView(interpreter, makeargs) if uri is configUri
+      new ScriptView(interpreter, makeargs) if uri is configUri
 
   show: ->
     editor = atom.workspace.getActiveEditor()
